@@ -1,17 +1,18 @@
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 
-// ⚠️ EDITE ESSAS LINHAS DEPOIS
+// ⚠️ EDITE ESSAS LINHAS
 const KIWIFY_WEBHOOK_TOKEN = 'COLE_O_TOKEN_DO_WEBHOOK_AQUI';
 const HMAC_SECRET = 'dash-optimizer-chave-secreta-2025-MUITO-SEGURA';
-const EMAIL_USER = 'SEU_EMAIL@gmail.com';
-const EMAIL_PASS = 'SUA_SENHA_DE_APP_AQUI';
+const EMAIL_USER = 'cyclonadofps@gmail.com';
+const EMAIL_PASS = 'gdpz pmsd twna oram';
 const EMAIL_FROM = 'DashOptimizer <SEU_EMAIL@gmail.com>';
+const DOWNLOAD_URL = 'https://drive.google.com/file/d/1_nLeNjBkFgThK4V5nr1dRv9Aty_BzEIw/view?usp=sharing';
 
-function gerarKey(email) {
-    const parteAleatoria = crypto.randomBytes(8).toString('hex').toUpperCase();
+function gerarKey() {
+    const parteAleatoria = crypto.randomBytes(4).toString('hex').toUpperCase();
     const assinatura = crypto.createHmac('sha256', HMAC_SECRET)
-        .update(`${email}-${parteAleatoria}`)
+        .update(parteAleatoria)
         .digest('hex')
         .substring(0, 8)
         .toUpperCase();
@@ -43,7 +44,7 @@ async function enviarEmail(destinatario, nome, key) {
                     <li>Cole a chave quando for solicitado</li>
                 </ol>
                 <p style="text-align: center; margin: 30px 0;">
-                    <a href="SEU_LINK_DE_DOWNLOAD_AQUI" style="background: #111; color: #fff; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold;">Baixar DashOptimizer</a>
+                    <a href="${DOWNLOAD_URL}" style="background: #111; color: #fff; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold;">Baixar DashOptimizer</a>
                 </p>
                 <p style="font-size: 12px; color: #888;">Se você formatar o PC, entre em contato para receber uma nova chave.</p>
             </div>
@@ -52,26 +53,22 @@ async function enviarEmail(destinatario, nome, key) {
 }
 
 module.exports = async (req, res) => {
-    if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method not allowed' });
-    }
+    if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
     try {
         const body = req.body;
         const token = req.headers['x-kiwify-token'] || req.query.token;
-        if (token !== KIWIFY_WEBHOOK_TOKEN) {
-            return res.status(401).json({ error: 'Invalid token' });
-        }
+        if (token !== KIWIFY_WEBHOOK_TOKEN) return res.status(401).json({ error: 'Invalid token' });
+
         const email = body?.Customer?.email;
         const nome = body?.Customer?.full_name || 'Cliente';
         const status = body?.order_status || body?.status;
-        if (status !== 'paid' && status !== 'approved') {
-            return res.status(200).json({ ignored: true, status });
-        }
-        if (!email) {
-            return res.status(400).json({ error: 'Email não encontrado' });
-        }
-        const key = gerarKey(email);
+
+        if (status !== 'paid' && status !== 'approved') return res.status(200).json({ ignored: true, status });
+        if (!email) return res.status(400).json({ error: 'Email não encontrado' });
+
+        const key = gerarKey();
         await enviarEmail(email, nome, key);
+
         console.log(`[OK] Chave gerada para ${email}: ${key}`);
         return res.status(200).json({ success: true, email });
     } catch (e) {
