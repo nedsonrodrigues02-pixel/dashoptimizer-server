@@ -1,0 +1,81 @@
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+
+// ⚠️ EDITE ESSAS LINHAS DEPOIS
+const KIWIFY_WEBHOOK_TOKEN = 'COLE_O_TOKEN_DO_WEBHOOK_AQUI';
+const HMAC_SECRET = 'dash-optimizer-chave-secreta-2025-MUITO-SEGURA';
+const EMAIL_USER = 'SEU_EMAIL@gmail.com';
+const EMAIL_PASS = 'SUA_SENHA_DE_APP_AQUI';
+const EMAIL_FROM = 'DashOptimizer <SEU_EMAIL@gmail.com>';
+
+function gerarKey(email) {
+    const parteAleatoria = crypto.randomBytes(8).toString('hex').toUpperCase();
+    const assinatura = crypto.createHmac('sha256', HMAC_SECRET)
+        .update(`${email}-${parteAleatoria}`)
+        .digest('hex')
+        .substring(0, 8)
+        .toUpperCase();
+    return `DASH-${parteAleatoria.substring(0,4)}-${parteAleatoria.substring(4,8)}-${assinatura.substring(0,4)}-${assinatura.substring(4,8)}`;
+}
+
+async function enviarEmail(destinatario, nome, key) {
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: { user: EMAIL_USER, pass: EMAIL_PASS }
+    });
+
+    await transporter.sendMail({
+        from: EMAIL_FROM,
+        to: destinatario,
+        subject: '🎉 Sua chave de ativação do DashOptimizer',
+        html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #111;">Olá, ${nome}!</h2>
+                <p>Obrigado por comprar o <b>DashOptimizer</b>.</p>
+                <p>Sua chave de ativação é:</p>
+                <div style="background: #f0f0f0; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0;">
+                    <code style="font-size: 22px; font-weight: bold; letter-spacing: 2px; color: #111;">${key}</code>
+                </div>
+                <p><b>Como ativar:</b></p>
+                <ol>
+                    <li>Baixe o DashOptimizer no link abaixo</li>
+                    <li>Abra o app</li>
+                    <li>Cole a chave quando for solicitado</li>
+                </ol>
+                <p style="text-align: center; margin: 30px 0;">
+                    <a href="SEU_LINK_DE_DOWNLOAD_AQUI" style="background: #111; color: #fff; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold;">Baixar DashOptimizer</a>
+                </p>
+                <p style="font-size: 12px; color: #888;">Se você formatar o PC, entre em contato para receber uma nova chave.</p>
+            </div>
+        `
+    });
+}
+
+module.exports = async (req, res) => {
+    if (req.method !== 'POST') {
+        return res.status(405).json({ error: 'Method not allowed' });
+    }
+    try {
+        const body = req.body;
+        const token = req.headers['x-kiwify-token'] || req.query.token;
+        if (token !== KIWIFY_WEBHOOK_TOKEN) {
+            return res.status(401).json({ error: 'Invalid token' });
+        }
+        const email = body?.Customer?.email;
+        const nome = body?.Customer?.full_name || 'Cliente';
+        const status = body?.order_status || body?.status;
+        if (status !== 'paid' && status !== 'approved') {
+            return res.status(200).json({ ignored: true, status });
+        }
+        if (!email) {
+            return res.status(400).json({ error: 'Email não encontrado' });
+        }
+        const key = gerarKey(email);
+        await enviarEmail(email, nome, key);
+        console.log(`[OK] Chave gerada para ${email}: ${key}`);
+        return res.status(200).json({ success: true, email });
+    } catch (e) {
+        console.error('[ERRO]', e);
+        return res.status(500).json({ error: e.message });
+    }
+};
