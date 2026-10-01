@@ -2,12 +2,12 @@ const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 
 // ⚠️ EDITE ESSAS LINHAS
-const KIWIFY_WEBHOOK_TOKEN = 'COLE_O_TOKEN_DO_WEBHOOK_AQUI';
+const KIWIFY_WEBHOOK_TOKEN = '9he9cwlhw5v';
 const HMAC_SECRET = 'dash-optimizer-chave-secreta-2025-MUITO-SEGURA';
 const EMAIL_USER = 'cyclonadofps@gmail.com';
-const EMAIL_PASS = 'gdpz pmsd twna oram';
-const EMAIL_FROM = 'DashOptimizer <SEU_EMAIL@gmail.com>';
-const DOWNLOAD_URL = 'https://drive.google.com/file/d/1_nLeNjBkFgThK4V5nr1dRv9Aty_BzEIw/view?usp=sharing';
+const EMAIL_PASS = 'gdpzpmsdtwnaoram';
+const EMAIL_FROM = 'DashOptimizer <cyclonadofps@gmail.com>';
+const DOWNLOAD_URL = 'https://drive.usercontent.google.com/download?id=1_nLeNjBkFgThK4V5nr1dRv9Aty_BzEIw&export=download';
 
 function gerarKey() {
     const parteAleatoria = crypto.randomBytes(4).toString('hex').toUpperCase();
