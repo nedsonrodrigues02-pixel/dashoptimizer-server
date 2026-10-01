@@ -3,7 +3,7 @@ const nodemailer = require('nodemailer');
 
 // ⚠️ EDITE ESSAS LINHAS
 const KIWIFY_WEBHOOK_TOKEN = '9he9cwlhw5v';
-const HMAC_SECRET = 'dash-optimizer-chave-secreta-2025-MUITO-SEGURA';
+const HMAC_SECRET = 'Cyclon4d0FPS_DashOptimizer_MasterKey_2025_x9KpL2mN7qR4vB8wE6zY1uI5tG0cF3hD';
 const EMAIL_USER = 'cyclonadofps@gmail.com';
 const EMAIL_PASS = 'gdpzpmsdtwnaoram';
 const EMAIL_FROM = 'DashOptimizer <cyclonadofps@gmail.com>';
