@@ -7,7 +7,7 @@ const HMAC_SECRET = 'Cyclon4d0FPS_DashOptimizer_MasterKey_2025_x9KpL2mN7qR4vB8wE
 const EMAIL_USER = 'cyclonadofps@gmail.com';
 const EMAIL_PASS = 'gdpzpmsdtwnaoram';
 const EMAIL_FROM = 'DashOptimizer <cyclonadofps@gmail.com>';
-const DOWNLOAD_URL = 'https://drive.usercontent.google.com/download?id=1IV3lVfJw9h9L5o5AzBHu4jE9qErxtWXw&export=download&authuser=0';
+const DOWNLOAD_URL = 'https://drive.usercontent.google.com/download?id=1sYIeokrHiAQu6lpV-cbzR8wupOqLxN8z&export=download&authuser=0';
 
 function gerarKey() {
     const parteAleatoria = crypto.randomBytes(4).toString('hex').toUpperCase();
